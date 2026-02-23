@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4CAF50">
+    <title>Registro de Partes</title>
+    <link rel="manifest" href="manifest.json">
+    <script src="config.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-info h2 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .user-info p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #d32f2f;
+        }
+
+        .form-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-title {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select:disabled, input:disabled, textarea:disabled {
+            background: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        .datetime-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message, .error-message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .success-message.show, .error-message.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .required {
+            color: #f44336;
+        }
+
+        /* Estilo para el botón de voz */
+        .voice-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            width: 50px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: background 0.3s;
+        }
+        .voice-btn:hover {
+            background: #5a6fd8;
+        }
+        .voice-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .datetime-group {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .logout-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="user-info">
+                <h2>📋 Registro de Partes</h2>
+                <p id="userName">Cargando...</p>
+            </div>
+            <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+        </div>
+
+        <!-- Formulario -->
+        <div class="form-card">
+            <h3 class="form-title">Nuevo Registro</h3>
+
+            <div id="successMessage" class="success-message"></div>
+            <div id="errorMessage" class="error-message"></div>
+
+            <form id="registroForm">
+                <!-- Cliente -->
+                <div class="form-group">
+                    <label for="cliente">Cliente <span class="required">*</span></label>
+                    <select id="cliente" required>
+                        <option value="">Selecciona un cliente...</option>
+                    </select>
+                </div>
+
+                <!-- Referencia -->
+                <div class="form-group">
+                    <label for="referencia">Referencia <span class="required">*</span></label>
+                    <select id="referencia" required disabled>
+                        <option value="">Primero selecciona un cliente</option>
+                    </select>
+                </div>
+
+                <!-- Cantidad -->
+                <div class="form-group">
+                    <label for="cantidad">Cantidad <span class="required">*</span></label>
+                    <input 
+                        type="number" 
+                        id="cantidad" 
+                        min="1" 
+                        step="1"
+                        placeholder="Ingresa la cantidad"
+                        required
+                    >
+                </div>
+
+                <!-- Motivo -->
+                <div class="form-group">
+                    <label for="motivo">Motivo <span class="required">*</span></label>
+                    <select id="motivo" required>
+                        <option value="">Selecciona un motivo...</option>
+                    </select>
+                </div>
+
+                <!-- Observaciones con micrófono -->
+                <div class="form-group">
+                    <label for="observaciones">Observaciones</label>
+                    <div style="display: flex; gap: 10px;">
+                        <textarea id="observaciones" rows="3" placeholder="Escribe aquí o usa el micrófono..." style="flex: 1;"></textarea>
+                        <button type="button" id="voiceBtn" class="voice-btn" title="Entrada por voz">🎤</button>
+                    </div>
+                    <small style="color: #666;">Haz clic en el micrófono y habla para llenar el campo automáticamente.</small>
+                </div>
+
+                <!-- Fechas -->
+                <div class="form-group">
+                    <label>Fecha y Hora de Entrada <span class="required">*</span></label>
+                    <div class="datetime-group">
+                        <input type="date" id="fechaEntrada" required>
+                        <select id="horaEntrada" required>
+                            <option value="">Selecciona hora...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Fecha y Hora de Salida <span class="required">*</span></label>
+                    <div class="datetime-group">
+                        <input type="date" id="fechaSalida" required>
+                        <select id="horaSalida" required>
+                            <option value="">Selecciona hora...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="submitBtn">
+                    Guardar Registro
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // URL de la API
+        const API_URL = CONFIG.API_URL;
+        
+        // Variables globales
+        let userData = null;
+        let clientes = [];
+        let motivos = [];
+
+        // Generar opciones de hora cada 30 minutos
+        function generarOpcionesHora() {
+            const opciones = [];
+            for (let hora = 0; hora < 24; hora++) {
+                for (let minuto = 0; minuto < 60; minuto += 30) {
+                    const horaStr = String(hora).padStart(2, '0');
+                    const minutoStr = String(minuto).padStart(2, '0');
+                    opciones.push(`${horaStr}:${minutoStr}`);
+                }
+            }
+            return opciones;
+        }
+
+        // Poblar selectores de hora
+        function poblarSelectoresHora() {
+            const opciones = generarOpcionesHora();
+            const selectHoraEntrada = document.getElementById('horaEntrada');
+            const selectHoraSalida = document.getElementById('horaSalida');
+
+            opciones.forEach(hora => {
+                const optionEntrada = document.createElement('option');
+                optionEntrada.value = hora;
+                optionEntrada.textContent = hora;
+                selectHoraEntrada.appendChild(optionEntrada);
+
+                const optionSalida = document.createElement('option');
+                optionSalida.value = hora;
+                optionSalida.textContent = hora;
+                selectHoraSalida.appendChild(optionSalida);
+            });
+        }
+
+        // Verificar sesión al cargar
+        window.addEventListener('DOMContentLoaded', async () => {
+            // Verificar si hay sesión
+            const userDataStr = localStorage.getItem('userData');
+            if (!userDataStr) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            userData = JSON.parse(userDataStr);
+            document.getElementById('userName').textContent = `Bienvenido, ${userData.nombreCompleto}`;
+
+            // Poblar selectores de hora
+            poblarSelectoresHora();
+
+            // Cargar datos iniciales
+            await cargarClientes();
+            await cargarMotivos();
+            
+            // Establecer fecha y hora actual por defecto
+            setFechaHoraActual();
+
+            // Event listeners para actualizar hora de salida automáticamente
+            document.getElementById('fechaEntrada').addEventListener('change', actualizarHoraSalida);
+            document.getElementById('horaEntrada').addEventListener('change', actualizarHoraSalida);
+
+            // Inicializar reconocimiento de voz
+            inicializarVoz();
+        });
+
+        // Establecer fecha y hora actual
+        function setFechaHoraActual() {
+            const ahora = new Date();
+            const fecha = ahora.toISOString().split('T')[0];
+            
+            // Redondear a la hora más cercana en intervalos de 30 minutos
+            const minutos = ahora.getMinutes();
+            const minutosRedondeados = minutos < 30 ? 0 : 30;
+            const horaActual = ahora.getHours();
+            
+            const horaStr = String(horaActual).padStart(2, '0');
+            const minutoStr = String(minutosRedondeados).padStart(2, '0');
+            const hora = `${horaStr}:${minutoStr}`;
+
+            document.getElementById('fechaEntrada').value = fecha;
+            document.getElementById('horaEntrada').value = hora;
+            
+            // Calcular hora de salida (30 minutos después)
+            const fechaEntradaObj = new Date(ahora);
+            fechaEntradaObj.setMinutes(minutosRedondeados);
+            fechaEntradaObj.setSeconds(0);
+            calcularHoraSalida(fechaEntradaObj);
+        }
+
+        // Calcular hora de salida automáticamente (30 minutos después)
+        function calcularHoraSalida(fechaEntrada) {
+            // Crear fecha de salida sumando 30 minutos
+            const fechaSalida = new Date(fechaEntrada.getTime() + 30 * 60000);
+            
+            const fechaSalidaStr = fechaSalida.toISOString().split('T')[0];
+            const horaStr = String(fechaSalida.getHours()).padStart(2, '0');
+            const minutoStr = String(fechaSalida.getMinutes()).padStart(2, '0');
+            const horaSalidaStr = `${horaStr}:${minutoStr}`;
+
+            document.getElementById('fechaSalida').value = fechaSalidaStr;
+            document.getElementById('horaSalida').value = horaSalidaStr;
+        }
+
+        function actualizarHoraSalida() {
+            const fechaEntrada = document.getElementById('fechaEntrada').value;
+            const horaEntrada = document.getElementById('horaEntrada').value;
+
+            if (fechaEntrada && horaEntrada) {
+                // Crear objeto Date con fecha y hora de entrada
+                const [year, month, day] = fechaEntrada.split('-');
+                const [hours, minutes] = horaEntrada.split(':');
+                const fechaEntradaObj = new Date(year, month - 1, day, hours, minutes);
+
+                // Calcular hora de salida
+                calcularHoraSalida(fechaEntradaObj);
+            }
+        }
+
+        // Cargar clientes
+        async function cargarClientes() {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({
+                        action: 'getClientes',
+                        usuario: userData.usuario
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    clientes = result.data.clientes;
+                    const selectCliente = document.getElementById('cliente');
+                    
+                    clientes.forEach(cliente => {
+                        const option = document.createElement('option');
+                        option.value = cliente;
+                        option.textContent = cliente;
+                        selectCliente.appendChild(option);
+                    });
+                } else {
+                    if (result.message.includes('expirado')) {
+                        logout();
+                    } else {
+                        showError(result.message);
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error al cargar clientes');
+            }
+        }
+
+        // Cargar motivos
+        async function cargarMotivos() {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({
+                        action: 'getMotivos',
+                        usuario: userData.usuario
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    motivos = result.data.motivos;
+                    const selectMotivo = document.getElementById('motivo');
+                    
+                    motivos.forEach(motivo => {
+                        const option = document.createElement('option');
+                        option.value = motivo;
+                        option.textContent = motivo;
+                        selectMotivo.appendChild(option);
+                    });
+                } else {
+                    if (result.message.includes('expirado')) {
+                        logout();
+                    } else {
+                        showError(result.message);
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error al cargar motivos');
+            }
+        }
+
+        // Cargar referencias cuando se selecciona un cliente
+        document.getElementById('cliente').addEventListener('change', async (e) => {
+            const cliente = e.target.value;
+            const selectReferencia = document.getElementById('referencia');
+            
+            // Limpiar referencias
+            selectReferencia.innerHTML = '<option value="">Cargando...</option>';
+            selectReferencia.disabled = true;
+
+            if (!cliente) {
+                selectReferencia.innerHTML = '<option value="">Primero selecciona un cliente</option>';
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({
+                        action: 'getReferencias',
+                        usuario: userData.usuario,
+                        cliente: cliente
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    selectReferencia.innerHTML = '<option value="">Selecciona una referencia...</option>';
+                    
+                    result.data.referencias.forEach(referencia => {
+                        const option = document.createElement('option');
+                        option.value = referencia;
+                        option.textContent = referencia;
+                        selectReferencia.appendChild(option);
+                    });
+                    
+                    selectReferencia.disabled = false;
+                } else {
+                    if (result.message.includes('expirado')) {
+                        logout();
+                    } else {
+                        selectReferencia.innerHTML = '<option value="">Error al cargar referencias</option>';
+                        showError(result.message);
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                selectReferencia.innerHTML = '<option value="">Error al cargar referencias</option>';
+                showError('Error al cargar referencias');
+            }
+        });
+
+        // ============================================
+        // FUNCIÓN PARA CALCULAR EL TURNO AUTOMÁTICAMENTE
+        // Basado en la hora de entrada (formato HH:MM)
+        // ============================================
+        function calcularTurno(horaEntrada) {
+            // horaEntrada en formato "HH:MM"
+            const [horas, minutos] = horaEntrada.split(':').map(Number);
+            const horaDecimal = horas + minutos / 60;
+
+            // Definir rangos:
+            // Mañana: 6:00 a 14:00 (incluye 6:00, excluye 14:00)
+            // Tarde: 14:00 a 22:00 (incluye 14:00, excluye 22:00)
+            // Noche: 22:00 a 6:00 (del día siguiente)
+            if (horaDecimal >= 5.5 && horaDecimal < 14.5) {
+                return 'Mañana';
+            } else if (horaDecimal >= 14.5 && horaDecimal < 22.5) {
+                return 'Tarde';
+            } else {
+                return 'Noche'; // de 22:30 a 5:30 
+            }
+        }
+
+        // Enviar formulario
+        document.getElementById('registroForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Guardando...';
+
+            // Ocultar mensajes
+            document.getElementById('successMessage').classList.remove('show');
+            document.getElementById('errorMessage').classList.remove('show');
+
+            // Obtener datos del formulario
+            const cliente = document.getElementById('cliente').value;
+            const referencia = document.getElementById('referencia').value;
+            const cantidad = parseInt(document.getElementById('cantidad').value);
+            const motivo = document.getElementById('motivo').value;
+            const observaciones = document.getElementById('observaciones').value;
+            
+            const fechaEntrada = document.getElementById('fechaEntrada').value;
+            const horaEntrada = document.getElementById('horaEntrada').value;
+            const fechaSalida = document.getElementById('fechaSalida').value;
+            const horaSalida = document.getElementById('horaSalida').value;
+
+            // Calcular turno automáticamente según la hora de entrada
+            const turno = calcularTurno(horaEntrada);
+
+            // Formatear fechas a DD/MM/YYYY HH:MM
+            const fechaEntradaFormateada = formatearFechaHora(fechaEntrada, horaEntrada);
+            const fechaSalidaFormateada = formatearFechaHora(fechaSalida, horaSalida);
+
+            // Preparar registro
+            const registro = {
+                usuario: userData.usuario,
+                cliente: cliente,
+                referencia: referencia,
+                cantidad: cantidad,
+                motivo: motivo,
+                turno: turno,                         // calculado automáticamente
+                observaciones: observaciones,
+                fechaEntrada: fechaEntradaFormateada,
+                fechaSalida: fechaSalidaFormateada
+            };
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify({
+                        action: 'saveRegistro',
+                        registro: registro
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showSuccess('¡Registro guardado correctamente!');
+                    
+                    // Limpiar formulario
+                    document.getElementById('registroForm').reset();
+                    document.getElementById('referencia').disabled = true;
+                    document.getElementById('referencia').innerHTML = '<option value="">Primero selecciona un cliente</option>';
+                    document.getElementById('observaciones').value = '';       // limpiar observaciones
+                    
+                    // Restablecer fechas
+                    setFechaHoraActual();
+                } else {
+                    if (result.message.includes('expirado')) {
+                        logout();
+                    } else {
+                        showError(result.message);
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Error al guardar el registro');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Guardar Registro';
+            }
+        });
+
+        // Formatear fecha y hora a DD/MM/YYYY HH:MM
+        function formatearFechaHora(fecha, hora) {
+            const [year, month, day] = fecha.split('-');
+            return `${day}/${month}/${year} ${hora}`;
+        }
+
+        // Mostrar mensaje de éxito
+        function showSuccess(message) {
+            const successMsg = document.getElementById('successMessage');
+            successMsg.textContent = message;
+            successMsg.classList.add('show');
+            
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 5000);
+        }
+
+        // Mostrar mensaje de error
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMessage');
+            errorMsg.textContent = message;
+            errorMsg.classList.add('show');
+            
+            setTimeout(() => {
+                errorMsg.classList.remove('show');
+            }, 5000);
+        }
+
+        // Cerrar sesión
+        function logout() {
+            localStorage.removeItem('userData');
+            window.location.href = 'index.html';
+        }
+
+        // ============================================
+        // FUNCIONALIDAD DE RECONOCIMIENTO DE VOZ
+        // ============================================
+        function inicializarVoz() {
+            const voiceBtn = document.getElementById('voiceBtn');
+            const observacionesField = document.getElementById('observaciones');
+
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'es-ES';
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.maxAlternatives = 1;
+
+                voiceBtn.addEventListener('click', () => {
+                    recognition.start();
+                    voiceBtn.style.background = '#f44336'; // indicar grabación
+                });
+
+                recognition.addEventListener('result', (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    // Añadir al final del texto existente
+                    observacionesField.value += (observacionesField.value ? ' ' : '') + transcript;
+                });
+
+                recognition.addEventListener('end', () => {
+                    voiceBtn.style.background = '#667eea'; // restaurar color
+                });
+
+                recognition.addEventListener('error', (event) => {
+                    console.error('Error de voz:', event.error);
+                    voiceBtn.style.background = '#667eea';
+                    showError('No se pudo usar el micrófono. Verifica los permisos.');
+                });
+            } else {
+                voiceBtn.disabled = true;
+                voiceBtn.title = 'Voz no soportada en este navegador';
+                voiceBtn.style.opacity = 0.5;
+            }
+        }
+    </script>
+</body>
+</html>
