@@ -363,7 +363,7 @@
         function generarOpcionesHora() {
             const opciones = [];
             for (let hora = 0; hora < 24; hora++) {
-                for (let minuto = 0; minuto < 60; minuto += 30) {
+                for (let minuto = 0; minuto < 60; minuto += 15) {
                     const horaStr = String(hora).padStart(2, '0');
                     const minutoStr = String(minuto).padStart(2, '0');
                     opciones.push(`${horaStr}:${minutoStr}`);
